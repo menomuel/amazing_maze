@@ -23,6 +23,11 @@ public:
 
     void update(int row, int col);
 
+    const std::vector<std::vector<Cell>>& getData() const
+    {
+        return maze_;
+    };
+
 private:
     int numCubes_;
     std::shared_ptr<Cube> cube_;

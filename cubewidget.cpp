@@ -121,6 +121,29 @@ void CubeWidget::sceneMaterialChange(QString newMat)
     scene->getCube()->setMaterial(currMat);
 }
 
+void CubeWidget::collisionDetection(int currRow, int currCol)
+{
+    auto maze = scene->getData();
+    float side = scene->getCube()->getFacetSideLength();
+    float walkingZone = side * 0.4;
+
+    auto currPos = camera.getCameraPos();
+
+    if(maze[currRow+1][currCol].cellType == WALL && currPos.x() > side * currRow + walkingZone)
+        camera.setCameraPos(QVector3D(side * currRow + walkingZone, currPos.y(), currPos.z()));
+
+    if(maze[currRow-1][currCol].cellType == WALL && currPos.x() < side * currRow - walkingZone)
+        camera.setCameraPos(QVector3D(side * currRow - walkingZone, currPos.y(), currPos.z()));
+
+    currPos = camera.getCameraPos();
+    if(maze[currRow][currCol+1].cellType == WALL && currPos.z() < -side * currCol - walkingZone)
+        camera.setCameraPos(QVector3D(currPos.x(), currPos.y(), -side * currCol - walkingZone));
+
+    if(maze[currRow][currCol-1].cellType == WALL && currPos.z() > -side * currCol + walkingZone)
+        camera.setCameraPos(QVector3D(currPos.x(), currPos.y(), -side * currCol + walkingZone));
+
+}
+
 
 void CubeWidget::mousePressEvent(QMouseEvent *e)
 {
@@ -210,7 +233,9 @@ void CubeWidget::doMovement()
     fractPart = modf(-camera.getCameraPos().z()/scene->getCube()->getFacetSideLength(), &intPart);
     int col = fractPart < 0.5 ? int(intPart) : int(intPart) + 1;
 
+    collisionDetection(row, col);
     scene->update(row, col);
+
 }
 
 

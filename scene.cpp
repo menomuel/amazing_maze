@@ -1,5 +1,7 @@
 #include "scene.h"
 
+//#include <algorithm>
+
 #include "maze_generator.h"
 #include "pathfinder.h"
 
@@ -67,7 +69,16 @@ void Scene::drawScene(QOpenGLShaderProgram *shader) const
         for (int j = 0; j < static_cast<int>(maze_[0].size()); ++j)
         {
             QMatrix4x4 mat;
-            if(maze_[i][j].cellType == WALL)
+            if(std::find(path_.begin(), path_.end(), maze_[i][j]) != path_.end())
+            {
+                QVector3D currPos = QVector3D(cube_->getFacetSideLength() * i,
+                                              -cube_->getFacetSideLength() / 2,
+                                              -cube_->getFacetSideLength() * j);
+                mat.translate(currPos);
+                shader->setUniformValue(0, mat);
+                pathMaterial->uploadToShader(shader);
+                rect_->render(shader);
+            } else if(maze_[i][j].cellType == WALL)
             {
                 QVector3D currPos = QVector3D(cube_->getFacetSideLength() * i,
                                               0.f,

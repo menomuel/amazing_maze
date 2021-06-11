@@ -77,6 +77,9 @@ signals:
     void fpsChanged(double);
 
 private:
+    void collisionDetection(int currRow, int currCol);
+
+private:
     static constexpr float zNear = 0.1;
     static constexpr float zFar = 100.;
     static constexpr unsigned deltaTimeMsec = 12;
