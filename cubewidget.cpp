@@ -264,6 +264,9 @@ void CubeWidget::initializeGL()
     pointLight = PointLightSource();
     projectorLight = ProjectorLightSource(camera.getCameraPos(), camera.getCameraFront());
 
+    //textureMap = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\Brick.jpeg)");
+    glActiveTexture(GL_TEXTURE0);
+
     n = 0;
     // Use QBasicTimer because its faster than QTimer
     timer.start(deltaTimeMsec, this);
@@ -335,6 +338,10 @@ void CubeWidget::paintGL()
     objectShader.setUniformValue(1, camera.getViewMatrix());
     objectShader.setUniformValue(2, camera.getProjectionMatrix());
     objectShader.setUniformValue(3, camera.getCameraPos());
+
+    //objectShader.setUniformValue("textMap",0);
+    glActiveTexture(GL_TEXTURE0);
+    //textureMap->bind();
 
     scene->getCube()->getMaterial()->uploadToShader(&objectShader);
     directLight.uploadToShader(&objectShader);

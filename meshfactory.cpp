@@ -15,8 +15,16 @@ std::shared_ptr<Mesh> MeshFactory::createCubeMesh(float sideLength, int nStrips)
 
     // fill front facet with vertices
     for(int j = 0; j < nStrips + 1; ++j)
+    {
         for(int i = 0; i < nStrips + 1; ++i)
-            pCube->vertices.emplace_back(QVector3D(-sideLength/2 + gridStep * i, -sideLength/2 + gridStep * j, sideLength/2), frontNormal);
+        {
+            float s = static_cast<float>(1.f * i / nStrips);
+            float t = static_cast<float>(1.f * j / nStrips);
+            //pCube->vertices.emplace_back(QVector3D(-sideLength/2 + gridStep * i, -sideLength/2 + gridStep * j, sideLength/2), frontNormal);
+            pCube->vertices.emplace_back(QVector3D(-sideLength/2 + gridStep * i, -sideLength/2 + gridStep * j, sideLength/2), frontNormal, QVector2D(s, t));
+
+        }
+    }
 
     // fill front facet indices
     for (GLushort j = 0; j < nStrips; ++j)
@@ -55,7 +63,7 @@ std::shared_ptr<Mesh> MeshFactory::createCubeMesh(float sideLength, int nStrips)
         offset = pCube->vertices.size();
 
         for (size_t i = 0; i < vertexCount; ++i)
-           pCube->vertices.emplace_back(rotation * pCube->vertices[i].position, normal);
+           pCube->vertices.emplace_back(rotation * pCube->vertices[i].position, normal, pCube->vertices[i].texCoord);
 
         for (size_t i = 0; i < indexCount; ++i)
            pCube->indices.push_back(pCube->indices[i] + offset);
@@ -68,7 +76,7 @@ std::shared_ptr<Mesh> MeshFactory::createCubeMesh(float sideLength, int nStrips)
     offset = pCube->vertices.size();
 
     for (size_t i = 0; i < vertexCount; ++i)
-       pCube->vertices.emplace_back(rotation * pCube->vertices[i].position, normal);
+       pCube->vertices.emplace_back(rotation * pCube->vertices[i].position, normal, pCube->vertices[i].texCoord);
 
     for (size_t i = 0; i < indexCount; ++i)
        pCube->indices.push_back(pCube->indices[i] + offset);
@@ -81,7 +89,7 @@ std::shared_ptr<Mesh> MeshFactory::createCubeMesh(float sideLength, int nStrips)
     offset = pCube->vertices.size();
 
     for (size_t i = 0; i < vertexCount; ++i)
-       pCube->vertices.emplace_back(rotation * pCube->vertices[i].position, normal);
+       pCube->vertices.emplace_back(rotation * pCube->vertices[i].position, normal, pCube->vertices[i].texCoord);
 
     for (size_t i = 0; i < indexCount; ++i)
        pCube->indices.push_back(pCube->indices[i] + offset);
@@ -102,9 +110,14 @@ std::shared_ptr<Mesh> MeshFactory::createRectMesh(float width, float height, int
 
     // fill front facet with vertices
     for(int j = 0; j < nStrips + 1; ++j)
+    {
         for(int i = 0; i < nStrips + 1; ++i)
-            pRect->vertices.emplace_back(QVector3D(-width/2 + gridStepW * i, 0, height/2 - gridStepH * j), frontNormal);
-
+        {
+            float s = static_cast<float>(1.f * i / nStrips);
+            float t = static_cast<float>(1.f * j / nStrips);
+            pRect->vertices.emplace_back(QVector3D(-width/2 + gridStepW * i, 0, height/2 - gridStepH * j), frontNormal, QVector2D(s, t));
+        }
+    }
     // fill front facet indices
     for (GLushort j = 0; j < nStrips; ++j)
     {
@@ -127,75 +140,4 @@ std::shared_ptr<Mesh> MeshFactory::createRectMesh(float width, float height, int
     }
 
     return pRect;
-}
-
-std::shared_ptr<Mesh> MeshFactory::createSphereMesh(float radius, float stackCount, float sectorCount)
-{
-    auto pSphere = std::make_shared<Mesh>();
-
-    float x, y, z, xy;                              // vertex position
-    float nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal
-    //float s, t;
-
-    float sectorStep = 2 * M_PI / sectorCount;
-    float stackStep = M_PI / stackCount;
-    float sectorAngle, stackAngle;
-
-    for(int i = 0; i <= stackCount; ++i)
-    {
-        stackAngle = M_PI / 2 - i * stackStep;        // from pi/2 to -pi/2
-        xy = radius * cosf(stackAngle);
-        z = radius * sinf(stackAngle);
-
-        // add (sectorCount+1) vertices per stack
-        // the first and last vertices have same position and normal, but different tex coords
-        for(int j = 0; j <= sectorCount; ++j)
-        {
-            sectorAngle = j * sectorStep;           // starting from 0 to 2pi
-
-            // vertex position (x, y, z)
-            x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
-            y = xy * sinf(sectorAngle);             // r * cos(u) * sin(v)
-
-            // normalized vertex normal (nx, ny, nz)
-            nx = x * lengthInv;
-            ny = y * lengthInv;
-            nz = z * lengthInv;
-
-            // vertex tex coord (s, t) range between [0, 1]
-           // s = static_cast<float>(j / sectorCount);
-            //t = static_cast<float>(i / stackCount);
-
-            pSphere->vertices.emplace_back(QVector3D(x, y, z), QVector3D(nx, ny, nz));
-        }
-    }
-
-    int k1, k2;
-    for(int i = 0; i < stackCount; ++i)
-    {
-        k1 = i * (sectorCount + 1);     // beginning of current stack
-        k2 = k1 + sectorCount + 1;      // beginning of next stack
-
-        for(int j = 0; j < sectorCount; ++j, ++k1, ++k2)
-        {
-            // 2 triangles per sector excluding first and last stacks
-            // k1 => k2 => k1+1
-            if(i != 0)
-            {
-                pSphere->indices.push_back(k1);
-                pSphere->indices.push_back(k2);
-                pSphere->indices.push_back(k1 + 1);
-            }
-
-            // k1+1 => k2 => k2+1
-            if(i != (stackCount-1))
-            {
-                pSphere->indices.push_back(k1 + 1);
-                pSphere->indices.push_back(k2);
-                pSphere->indices.push_back(k2 + 1);
-            }
-        }
-    }
-
-    return pSphere;
 }

@@ -39,6 +39,11 @@ void RenderObject::render(QOpenGLShaderProgram *program)
     program->setAttributeBuffer(normalLocation, GL_FLOAT, offsetof(Mesh::vertexType, normal),
                                 Mesh::vertexType::normalTupleSize, sizeof(Mesh::vertexType));
 
+    // Set texture coordinates
+    int textureLocation = program->attributeLocation("texCoord");
+    program->enableAttributeArray(textureLocation);
+    program->setAttributeBuffer(textureLocation, GL_FLOAT, offsetof(Mesh::vertexType, texCoord),
+                               Mesh::vertexType::textureTupleSize, sizeof(Mesh::vertexType));
 
     // Draw cube facets using indices
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

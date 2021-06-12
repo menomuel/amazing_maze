@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "cube.h"
 #include "scene.h"
+#include "texture.h"
 
 #include "pointlightsource.h"
 #include "directlightsource.h"
@@ -100,6 +101,8 @@ private:
     QOpenGLShaderProgram objectShader, lightShader;
     std::shared_ptr<Scene> scene;
     std::shared_ptr<Cube> pointLightCube;
+
+    std::shared_ptr<QOpenGLTexture> textureMap;
 
     DirectLightSource directLight;
     PointLightSource pointLight;

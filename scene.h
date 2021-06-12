@@ -5,6 +5,7 @@
 #include "cube.h"
 #include "rect.h"
 #include "types.h"
+#include "texture.h"
 
 #include <QMatrix4x4>
 #include <vector>
@@ -33,19 +34,15 @@ private:
     std::shared_ptr<Cube> cube_;
     std::shared_ptr<Rect> rect_;
 
-    std::shared_ptr<Cube> pathCube_;
-
-    std::vector<QMatrix4x4> matrices_;
-    std::vector<QMatrix4x4> cellMatrices_;
-    std::vector<QMatrix4x4> pathMatrices_;
-
     std::vector<std::vector<Cell>> maze_;
+    Cell start, finish;
     std::list<Cell> path_;
 
-    std::shared_ptr<Material> wallMaterial;
-    std::shared_ptr<Material> freeCellMaterial;
-    std::shared_ptr<Material> visitedCellMaterial;
-    std::shared_ptr<Material> pathMaterial;
+    std::shared_ptr<QOpenGLTexture> wallTex;
+    std::shared_ptr<QOpenGLTexture> freeCellTex;
+    std::shared_ptr<QOpenGLTexture> visitedCellTex;
+    std::shared_ptr<QOpenGLTexture> pathTex;
+    std::shared_ptr<QOpenGLTexture> finishTex;
 
 
 };

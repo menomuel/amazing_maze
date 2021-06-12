@@ -1,142 +1,67 @@
 #include "scene.h"
 
-//#include <algorithm>
-
 #include "maze_generator.h"
 #include "pathfinder.h"
 
-Scene::Scene(int numCubes) : numCubes_(numCubes), cube_(std::make_shared<Cube>()), rect_(std::make_shared<Rect>()),
-    pathCube_(std::make_shared<Cube>())
+Scene::Scene(int numCubes) : numCubes_(numCubes), cube_(std::make_shared<Cube>()), rect_(std::make_shared<Rect>())
 {
-    pathCube_->setMaterial(MaterialFactory::createGold());
-    wallMaterial = MaterialFactory::createJade();
-    freeCellMaterial = MaterialFactory::createRedRubber();
-    visitedCellMaterial = MaterialFactory::createYellowRubber();
-    pathMaterial = MaterialFactory::createGold();
+    wallTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\brick.jpeg)");
+    freeCellTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\ground.jpg)");
+    visitedCellTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\grass.jpg)");
+    pathTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\flowerbeds.jpg)");
+    finishTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\finish.jpg)");
 }
 
 void Scene::initScene()
 {
-    //auto maze = MazeGenerator::generate(8, 8);
-    maze_ = MazeGenerator::generate(8, 8);
-
-    /*
-    matrices_.clear();
-    cellMatrices_.clear();
-    for (int i = 0; i < static_cast<int>(maze.size()); ++i)
-    {
-        for (int j = 0; j < static_cast<int>(maze[0].size()); ++j)
-        {
-            if(maze[i][j].cellType == WALL)
-            {
-                QMatrix4x4 mat;
-                QVector3D currPos = QVector3D(cube_->getFacetSideLength() * i,
-                                              0.f,
-                                              -cube_->getFacetSideLength() * j);
-                mat.translate(currPos);
-                matrices_.push_back(mat);
-            } else {
-                QMatrix4x4 mat;
-                QVector3D currPos = QVector3D(cube_->getFacetSideLength() * i,
-                                              -cube_->getFacetSideLength() / 2,
-                                              -cube_->getFacetSideLength() * j);
-                mat.translate(currPos);
-                cellMatrices_.push_back(mat);
-            }
-        }
-    }
-    */
-
-    path_ = PathFinder::findPath(maze_, 1, 1, static_cast<int>(maze_.size()) - 2, static_cast<int>(maze_[0].size()) - 2);
-    /*
-    pathMatrices_.clear();
-    for(auto& cell: path)
-    {
-        QMatrix4x4 mat;
-        QVector3D currPos = QVector3D(pathCube_->getFacetSideLength() * cell.row,
-                                      0.f,
-                                      -pathCube_->getFacetSideLength() * cell.col);
-        mat.translate(currPos);
-        pathMatrices_.push_back(mat);
-    }
-    */
+    maze_ = MazeGenerator::generate(5, 5);
+    start = maze_[1][1];
+    finish = maze_[static_cast<int>(maze_.size()) - 2][static_cast<int>(maze_[0].size()) - 2];
+    path_ = PathFinder::findPath(maze_, start.row, start.col, finish.row, finish.col);
 }
+
 
 void Scene::drawScene(QOpenGLShaderProgram *shader) const
 {
+    shader->setUniformValue("textMap",0);
     for (int i = 0; i < static_cast<int>(maze_.size()); ++i)
     {
         for (int j = 0; j < static_cast<int>(maze_[0].size()); ++j)
         {
             QMatrix4x4 mat;
-            if(std::find(path_.begin(), path_.end(), maze_[i][j]) != path_.end())
-            {
-                QVector3D currPos = QVector3D(cube_->getFacetSideLength() * i,
-                                              -cube_->getFacetSideLength() / 2,
-                                              -cube_->getFacetSideLength() * j);
-                mat.translate(currPos);
-                shader->setUniformValue(0, mat);
-                pathMaterial->uploadToShader(shader);
-                rect_->render(shader);
-            } else if(maze_[i][j].cellType == WALL)
+            if(maze_[i][j].cellType == WALL)
             {
                 QVector3D currPos = QVector3D(cube_->getFacetSideLength() * i,
                                               0.f,
                                               -cube_->getFacetSideLength() * j);
                 mat.translate(currPos);
                 shader->setUniformValue(0, mat);
-                wallMaterial->uploadToShader(shader);
+                wallTex->bind();
                 cube_->render(shader);
-            } else if (maze_[i][j].cellType == CELL)
+            } else
             {
                 QVector3D currPos = QVector3D(cube_->getFacetSideLength() * i,
                                               -cube_->getFacetSideLength() / 2,
                                               -cube_->getFacetSideLength() * j);
                 mat.translate(currPos);
                 shader->setUniformValue(0, mat);
-                freeCellMaterial->uploadToShader(shader);
-                rect_->render(shader);
-            } else if (maze_[i][j].cellType == VISITED)
-            {
-                QVector3D currPos = QVector3D(cube_->getFacetSideLength() * i,
-                                              -cube_->getFacetSideLength() / 2,
-                                              -cube_->getFacetSideLength() * j);
-                mat.translate(currPos);
-                shader->setUniformValue(0, mat);
-                visitedCellMaterial->uploadToShader(shader);
+                if(maze_[i][j] == finish)
+                {
+                    finishTex->bind();
+                } else if(std::find(path_.begin(), path_.end(), maze_[i][j]) != path_.end())
+                {
+                    pathTex->bind();
+                } else if (maze_[i][j].cellType == CELL)
+                {
+                    freeCellTex->bind();
+                } else if (maze_[i][j].cellType == VISITED)
+                {
+                    visitedCellTex->bind();
+                }
                 rect_->render(shader);
             }
         }
     }
-    /*
-    for(auto& matrix: matrices_)
-    {
-        shader->setUniformValue(0, matrix);
-
-
-        // Expect other params all set
-        cube_->getMaterial()->uploadToShader(shader);
-        cube_->render(shader);
-    }
-
-    for(auto& pmatrix: pathMatrices_)
-    {
-        shader->setUniformValue(0, pmatrix);
-
-        // Expect other params all set
-        pathCube_->getMaterial()->uploadToShader(shader);
-        pathCube_->render(shader);
-    }
-
-    for(auto& cmatrix: cellMatrices_)
-    {
-        shader->setUniformValue(0, cmatrix);
-
-        // Expect other params all set
-        rect_->getMaterial()->uploadToShader(shader);
-        rect_->render(shader);
-    }
-    */
 }
 
 std::shared_ptr<Cube> Scene::getCube() const

@@ -25,7 +25,8 @@ SOURCES += \
     projectorlightsource.cpp \
     rect.cpp \
     renderobject.cpp \
-    scene.cpp
+    scene.cpp \
+    texture.cpp
 
 HEADERS += \
     camera.h \
@@ -45,6 +46,7 @@ HEADERS += \
     rect.h \
     renderobject.h \
     scene.h \
+    texture.h \
     types.h \
     vertex.h
 

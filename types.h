@@ -1,7 +1,7 @@
 #pragma once
 #include <stdio.h>
 
-enum cellTypes { CELL, VISITED, GENCELL, GENVISITED, RENDERED, WALL, WAY, CURRENT, LAST, SEEKED, EXIT };
+enum cellTypes { CELL, VISITED, FINISH, GENCELL, GENVISITED, RENDERED, WALL, WAY, CURRENT, LAST, SEEKED, EXIT };
 
 enum CellState { Close, Open };
 

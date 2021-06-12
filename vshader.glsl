@@ -6,10 +6,13 @@ layout (location = 3) uniform highp vec3 viewPos;
 
 layout (location = 0) in highp vec3 position;
 layout (location = 1) in highp vec3 normal;
+layout (location = 2) in highp vec2 texCoord;
 
 out lowp vec4 color;
 out highp vec3 Normal;
 out highp vec3 FragPos;
+
+out highp vec2 TexCoord;
 
 // Object material
 struct Material {
@@ -164,4 +167,5 @@ void main()
         result += CalcProjectorLight(projectorLight, Normal, FragPos, viewDir);
 
     color = vec4(result, 1.f);
+    TexCoord = texCoord;
 }

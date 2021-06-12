@@ -13,10 +13,21 @@ struct Vertex
     QVector3D normal;
     inline static constexpr size_t normalTupleSize = sizeof(normal) / sizeof(float);
 
+    QVector2D texCoord;
+    inline static constexpr size_t textureTupleSize = sizeof(texCoord) / sizeof(float);
+
     Vertex(QVector3D const& pos,
            QVector3D const& norm)
         : position(pos),
           normal(norm) {}
+
+
+    Vertex(QVector3D const& pos,
+           QVector3D const& norm,
+           QVector2D const& tex)
+        : position(pos),
+          normal(norm),
+          texCoord(tex) {}
 };
 
 
