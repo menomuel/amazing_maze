@@ -4,6 +4,7 @@
 #include <QMouseEvent>
 #include <QColor>
 
+#include <QtMath>
 #include <cmath>
 
 void CubeWidget::directLightToggle(int state)
@@ -336,6 +337,9 @@ void CubeWidget::initializeGL()
     scene = std::make_shared<Scene>();
     scene->init();
 
+    arrow = std::make_shared<Arrow>();
+    arrowTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\arrow.jpg)");
+
     camera.setZNear(zNear);
     camera.setZFar(zFar);
     camera.setCameraPos(QVector3D(scene->getCube()->getFacetSideLength(), 0, -scene->getCube()->getFacetSideLength()));
@@ -344,7 +348,6 @@ void CubeWidget::initializeGL()
     pointLight = PointLightSource();
     projectorLight = ProjectorLightSource(camera.getCameraPos(), camera.getCameraFront());
 
-    //textureMap = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\Brick.jpeg)");
     glActiveTexture(GL_TEXTURE0);
 
     n = 0;
@@ -410,6 +413,26 @@ void CubeWidget::paintGL()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    objectShader.bind();
+
+    if(godModeFlag)
+    {
+        QMatrix4x4 mat;
+        mat.translate(historyCameraPos);
+
+        auto a = QVector3D{0.f, 0.f, -1.f};
+        a.normalize();
+        auto b = QVector3D{historyCameraFront.x(), 0.f, historyCameraFront.z()};
+        b.normalize();
+
+        auto angle = qRadiansToDegrees(qAcos(QVector3D::dotProduct(a, b)));
+        mat.rotate(-angle, QVector3D{0.f, 1.f, 0.f});
+
+        objectShader.setUniformValue(0, mat);
+        arrowTex->bind();
+        arrow->render(&objectShader);
+    }
+
     camera.setFOV(fov);
 
     projectorLight.setPosition(camera.getCameraPos());
@@ -420,9 +443,7 @@ void CubeWidget::paintGL()
     objectShader.setUniformValue(2, camera.getProjectionMatrix());
     objectShader.setUniformValue(3, camera.getCameraPos());
 
-    //objectShader.setUniformValue("textMap",0);
     glActiveTexture(GL_TEXTURE0);
-    //textureMap->bind();
 
     scene->getCube()->getMaterial()->uploadToShader(&objectShader);
     directLight.uploadToShader(&objectShader);

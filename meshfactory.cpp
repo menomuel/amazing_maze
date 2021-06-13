@@ -141,3 +141,28 @@ std::shared_ptr<Mesh> MeshFactory::createRectMesh(float width, float height, int
 
     return pRect;
 }
+
+std::shared_ptr<Mesh> MeshFactory::createArrowMesh(float width, float height)
+{
+    auto pArrow = std::make_shared<Mesh>();
+
+    pArrow->vertices.reserve(4);
+    pArrow->indices.reserve(6);
+
+    QVector3D frontNormal = {0.f, 1.f, 0.f};
+
+    pArrow->vertices.emplace_back(QVector3D(-width/2, 0, height/2), frontNormal, QVector2D(0.f, 0.f));
+    pArrow->vertices.emplace_back(QVector3D(0, 0, -height/2), frontNormal, QVector2D(1.f, 0.5f));
+    pArrow->vertices.emplace_back(QVector3D(width/2, 0, height/2), frontNormal, QVector2D(0.f, 1.f));
+    pArrow->vertices.emplace_back(QVector3D(0, 0, 1.f/4*height), frontNormal, QVector2D(0.25f, 0.5f));
+
+    pArrow->indices.push_back(0);
+    pArrow->indices.push_back(3);
+    pArrow->indices.push_back(1);
+    pArrow->indices.push_back(3);
+    pArrow->indices.push_back(2);
+    pArrow->indices.push_back(1);
+
+    return pArrow;
+
+}

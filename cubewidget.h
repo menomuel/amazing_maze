@@ -3,6 +3,7 @@
 
 #include "camera.h"
 #include "cube.h"
+#include "arrow.h"
 #include "scene.h"
 #include "texture.h"
 
@@ -121,7 +122,8 @@ private:
     std::shared_ptr<Scene> scene;
     std::shared_ptr<Cube> pointLightCube;
 
-    std::shared_ptr<QOpenGLTexture> textureMap;
+    std::shared_ptr<Arrow> arrow;
+    std::shared_ptr<QOpenGLTexture> arrowTex;
 
     DirectLightSource directLight;
     PointLightSource pointLight;

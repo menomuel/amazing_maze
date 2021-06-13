@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    arrow.cpp \
     camera.cpp \
     cube.cpp \
     cubefacet.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
     texture.cpp
 
 HEADERS += \
+    arrow.h \
     camera.h \
     cube.h \
     cubefacet.h \
