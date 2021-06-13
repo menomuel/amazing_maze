@@ -5,6 +5,19 @@
 std::list<Cell> PathFinder::findPath(const std::vector<std::vector<Cell>>& Maze, int x, int y, int x_to, int y_to)
 {
     auto maze = Maze;
+    //clear previous maze history
+    for (int row = 0; row < static_cast<int>(maze.size()); ++row)
+    {
+        for (int col = 0; col < static_cast<int>(maze[0].size()); ++col)
+        {
+            if (maze[row][col].cellType != WALL)
+            {
+                maze[row][col].cellType = CELL;
+                maze[row][col].Visited = false;
+            }
+        }
+    }
+
 	std::list<Cell> path;
 
     if (maze[x][y].cellType == WALL || maze[x_to][y_to].cellType == WALL)

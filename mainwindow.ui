@@ -460,72 +460,97 @@
           </widget>
          </item>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
+          <widget class="QLabel" name="maze_label">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Maze</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
-            <widget class="QLabel" name="scene_label">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
+            <widget class="QLabel" name="time_label">
              <property name="text">
-              <string>Scene</string>
+              <string>Time</string>
              </property>
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <widget class="QLCDNumber" name="mins_elapsed">
+             <property name="font">
+              <font>
+               <family>MS Shell Dlg 2</family>
+              </font>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLCDNumber" name="secs_elapsed">
+             <property name="font">
+              <font>
+               <family>MS Shell Dlg 2</family>
+              </font>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <widget class="QCheckBox" name="show_path">
+             <property name="text">
+              <string>Path</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="god_mode">
+             <property name="text">
+              <string>God mode</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
              <item>
-              <widget class="QLabel" name="scene_cube_num_label">
+              <widget class="QLabel" name="maze_size_label">
                <property name="text">
-                <string>Num cubes</string>
+                <string>Maze size</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="scene_cube_num">
+              <widget class="QSpinBox" name="maze_size">
                <property name="minimum">
-                <number>1</number>
+                <number>2</number>
                </property>
                <property name="maximum">
-                <number>30</number>
+                <number>50</number>
                </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="material_label">
-               <property name="text">
-                <string>Material</string>
+               <property name="value">
+                <number>5</number>
                </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox">
-               <property name="minimumSize">
-                <size>
-                 <width>128</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <item>
-                <property name="text">
-                 <string>White</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Jade</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Red Rubber</string>
-                </property>
-               </item>
               </widget>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QPushButton" name="Restart">
+             <property name="text">
+              <string>Restart</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -551,12 +576,20 @@
    <container>1</container>
    <slots>
     <signal>fpsChanged(double)</signal>
+    <signal>setShowPathFlag(bool)</signal>
+    <signal>setGodModeFlag(bool)</signal>
+    <signal>minsElapsed(int)</signal>
+    <signal>secsElapsed(int)</signal>
     <slot>stripsUpd(int)</slot>
     <slot>directLightToggle(int)</slot>
     <slot>pointLightToggle(int)</slot>
     <slot>projectorLightToggle(int)</slot>
     <slot>sceneNumObjChange(int)</slot>
     <slot>sceneMaterialChange(QString)</slot>
+    <slot>showPath(bool)</slot>
+    <slot>godMode(bool)</slot>
+    <slot>restartScene()</slot>
+    <slot>resizeScene(int)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -569,8 +602,8 @@
    <slot>directLightToggle(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>683</x>
-     <y>79</y>
+     <x>969</x>
+     <y>67</y>
     </hint>
     <hint type="destinationlabel">
      <x>641</x>
@@ -586,7 +619,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>667</x>
-     <y>192</y>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>591</x>
@@ -602,27 +635,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>668</x>
-     <y>319</y>
+     <y>309</y>
     </hint>
     <hint type="destinationlabel">
      <x>600</x>
      <y>312</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>scene_cube_num</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>cubewidget</receiver>
-   <slot>sceneNumObjChange(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>735</x>
-     <y>454</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>623</x>
-     <y>440</y>
     </hint>
    </hints>
   </connection>
@@ -637,24 +654,136 @@
      <y>43</y>
     </hint>
     <hint type="destinationlabel">
-     <x>855</x>
-     <y>30</y>
+     <x>968</x>
+     <y>25</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>comboBox</sender>
-   <signal>activated(QString)</signal>
+   <sender>show_path</sender>
+   <signal>toggled(bool)</signal>
    <receiver>cubewidget</receiver>
-   <slot>sceneMaterialChange(QString)</slot>
+   <slot>showPath(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>871</x>
-     <y>464</y>
+     <x>661</x>
+     <y>485</y>
     </hint>
     <hint type="destinationlabel">
-     <x>633</x>
-     <y>423</y>
+     <x>612</x>
+     <y>524</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>god_mode</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>cubewidget</receiver>
+   <slot>godMode(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>821</x>
+     <y>493</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Restart</sender>
+   <signal>clicked()</signal>
+   <receiver>cubewidget</receiver>
+   <slot>restartScene()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>833</x>
+     <y>510</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>221</x>
+     <y>397</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cubewidget</sender>
+   <signal>setShowPathFlag(bool)</signal>
+   <receiver>show_path</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>564</x>
+     <y>266</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>696</x>
+     <y>492</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cubewidget</sender>
+   <signal>setGodModeFlag(bool)</signal>
+   <receiver>god_mode</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>578</x>
+     <y>342</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>852</x>
+     <y>483</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>maze_size</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>cubewidget</receiver>
+   <slot>resizeScene(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>774</x>
+     <y>526</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>349</x>
+     <y>456</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cubewidget</sender>
+   <signal>minsElapsed(int)</signal>
+   <receiver>mins_elapsed</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>587</x>
+     <y>222</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>798</x>
+     <y>446</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cubewidget</sender>
+   <signal>secsElapsed(int)</signal>
+   <receiver>secs_elapsed</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>421</x>
+     <y>235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>903</x>
+     <y>451</y>
     </hint>
    </hints>
   </connection>

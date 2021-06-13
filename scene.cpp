@@ -12,12 +12,24 @@ Scene::Scene(int numCubes) : numCubes_(numCubes), cube_(std::make_shared<Cube>()
     finishTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\finish.jpg)");
 }
 
-void Scene::initScene()
+void Scene::init(int size)
 {
-    maze_ = MazeGenerator::generate(5, 5);
+    maze_ = MazeGenerator::generate(size, size);
     start = maze_[1][1];
     finish = maze_[static_cast<int>(maze_.size()) - 2][static_cast<int>(maze_[0].size()) - 2];
     path_ = PathFinder::findPath(maze_, start.row, start.col, finish.row, finish.col);
+}
+
+void Scene::reload()
+{
+    for (int i = 0; i < static_cast<int>(maze_.size()); ++i)
+    {
+        for (int j = 0; j < static_cast<int>(maze_[0].size()); ++j)
+        {
+            if(maze_[i][j].cellType != WALL)
+                maze_[i][j].cellType = CELL;
+        }
+    }
 }
 
 
@@ -48,7 +60,7 @@ void Scene::drawScene(QOpenGLShaderProgram *shader) const
                 if(maze_[i][j] == finish)
                 {
                     finishTex->bind();
-                } else if(std::find(path_.begin(), path_.end(), maze_[i][j]) != path_.end())
+                } else if(showPathFlag && (std::find(path_.begin(), path_.end(), maze_[i][j]) != path_.end()))
                 {
                     pathTex->bind();
                 } else if (maze_[i][j].cellType == CELL)
@@ -69,14 +81,39 @@ std::shared_ptr<Cube> Scene::getCube() const
     return cube_;
 }
 
+Cell Scene::getStart() const
+{
+    return start;
+}
+
+Cell Scene::getFinish() const
+{
+    return finish;
+}
+
 void Scene::setNumCubes(int newNum)
 {
     numCubes_ = newNum;
-    initScene();
+    init();
 }
 
 void Scene::update(int row, int col)
 {
     if (maze_[row][col].cellType != WALL && maze_[row][col].cellType != VISITED)
         maze_[row][col].cellType = VISITED;
+}
+
+void Scene::setShowPathFlag(bool state)
+{
+    showPathFlag = state;
+}
+
+void Scene::setPath(const std::list<Cell> &newPath)
+{
+    path_ = newPath;
+}
+
+const std::vector<std::vector<Cell> > &Scene::getData() const
+{
+    return maze_;
 }

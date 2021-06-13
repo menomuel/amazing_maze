@@ -15,19 +15,22 @@ class Scene {
 public:
     Scene(int numCubes = 1);
 
-    void initScene();
+    void init(int size = 5);
+    void reload();
     void drawScene(QOpenGLShaderProgram* shader) const;
 
     std::shared_ptr<Cube> getCube() const;
+    Cell getStart() const;
+    Cell getFinish() const;
 
     void setNumCubes(int newNum);
 
     void update(int row, int col);
 
-    const std::vector<std::vector<Cell>>& getData() const
-    {
-        return maze_;
-    };
+    void setShowPathFlag(bool state);
+    void setPath(const std::list<Cell>& newPath);
+
+    const std::vector<std::vector<Cell>>& getData() const;
 
 private:
     int numCubes_;
@@ -37,6 +40,8 @@ private:
     std::vector<std::vector<Cell>> maze_;
     Cell start, finish;
     std::list<Cell> path_;
+
+    bool showPathFlag = false;
 
     std::shared_ptr<QOpenGLTexture> wallTex;
     std::shared_ptr<QOpenGLTexture> freeCellTex;

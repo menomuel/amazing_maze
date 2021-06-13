@@ -39,8 +39,18 @@ public:
 
     void setCameraPos(const QVector3D& pos);
     void setCameraFront(const QVector3D& front);
+    void setCameraRight(const QVector3D& right);
+    void setCameraUp(const QVector3D& up);
+    void setYaw(float yaw);
+    void setPitch(float pitch);
+
     QVector3D getCameraPos() const;
     QVector3D getCameraFront() const;
+    QVector3D getCameraRight() const;
+    QVector3D getCameraUp() const;
+    float getYaw() const;
+    float getPitch() const;
+
 
 private:
     void updateVectors();
@@ -49,8 +59,8 @@ private:
     QMatrix4x4 view_{};
     QMatrix4x4 projection_{};
 
-    QVector3D cameraPos_, cameraFront_, cameraUp_;
-    QVector3D cameraRight_;
+    QVector3D cameraPos_;
+    QVector3D cameraFront_, cameraUp_, cameraRight_;
     QVector3D up_;
 
     // field of view

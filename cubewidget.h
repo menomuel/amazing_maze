@@ -17,9 +17,12 @@
 #include <QVector2D>
 #include <QBasicTimer>
 #include <QTime>
+#include <QElapsedTimer>
 #include <QOpenGLShaderProgram>
 
 #include <memory>
+
+#include "pathfinder.h"
 
 class GeometryEngine;
 
@@ -74,8 +77,18 @@ public slots:
     void sceneNumObjChange(int);
     void sceneMaterialChange(QString);
 
+    void showPath(bool);
+    void godMode(bool);
+    void restartScene();
+    void resizeScene(int newSize);
+
 signals:
     void fpsChanged(double);
+    void setShowPathFlag(bool);
+    void setGodModeFlag(bool);
+    void secsElapsed(int);
+    void minsElapsed(int);
+
 
 private:
     void collisionDetection(int currRow, int currCol);
@@ -96,8 +109,14 @@ private:
     float fps;
     int n;
 
+    bool godModeFlag = false;
+    QVector3D historyCameraPos, historyCameraFront, historyCameraRight, historyCameraUp;
+    float historyYaw, historyPitch;
+
     QBasicTimer timer;
     QTime stopwatch;
+    QElapsedTimer timeRecord;
+
     QOpenGLShaderProgram objectShader, lightShader;
     std::shared_ptr<Scene> scene;
     std::shared_ptr<Cube> pointLightCube;

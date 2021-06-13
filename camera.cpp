@@ -9,7 +9,6 @@ void Camera::updateVectors()
     cameraFront_.setZ(std::sin(yaw_) * std::cos(pitch_));
     cameraFront_.normalize();
 
-    // order?
     cameraRight_ = QVector3D::crossProduct(cameraFront_, up_).normalized();
     cameraUp_ = QVector3D::crossProduct(cameraRight_, cameraFront_).normalized();
 }
@@ -126,6 +125,25 @@ void Camera::setCameraFront(const QVector3D &front)
     cameraFront_ = front;
 }
 
+void Camera::setCameraRight(const QVector3D &right)
+{
+    cameraRight_ = right;
+}
+
+void Camera::setCameraUp(const QVector3D &up)
+{
+    cameraUp_ = up;
+}
+
+void Camera::setYaw(float yaw)
+{
+    yaw_ = yaw;
+}
+
+void Camera::setPitch(float pitch)
+{
+    pitch_ = pitch;
+}
 
 QVector3D Camera::getCameraPos() const
 {
@@ -135,4 +153,24 @@ QVector3D Camera::getCameraPos() const
 QVector3D Camera::getCameraFront() const
 {
     return cameraFront_;
+}
+
+QVector3D Camera::getCameraRight() const
+{
+    return cameraRight_;
+}
+
+QVector3D Camera::getCameraUp() const
+{
+    return cameraUp_;
+}
+
+float Camera::getYaw() const
+{
+    return yaw_;
+}
+
+float Camera::getPitch() const
+{
+    return pitch_;
 }

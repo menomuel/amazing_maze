@@ -121,6 +121,78 @@ void CubeWidget::sceneMaterialChange(QString newMat)
     scene->getCube()->setMaterial(currMat);
 }
 
+void CubeWidget::showPath(bool state)
+{
+    //build path before showing
+    if(state)
+    {
+        double fractPart, intPart;
+        QVector3D pos = godModeFlag ? historyCameraPos : camera.getCameraPos();
+
+        fractPart = modf(pos.x()/scene->getCube()->getFacetSideLength(), &intPart);
+        int row = fractPart < 0.5 ? int(intPart) : int(intPart) + 1;
+        fractPart = modf(-pos.z()/scene->getCube()->getFacetSideLength(), &intPart);
+        int col = fractPart < 0.5 ? int(intPart) : int(intPart) + 1;
+
+        int row_to = scene->getFinish().row;
+        int col_to = scene->getFinish().col;
+
+
+        scene->setPath(PathFinder::findPath(scene->getData(), row, col, row_to, col_to));
+    }
+
+    scene->setShowPathFlag(state);
+
+}
+
+void CubeWidget::godMode(bool state)
+{
+    godModeFlag = state;
+
+    if (godModeFlag)
+    {
+        historyCameraPos = camera.getCameraPos();
+        historyCameraFront = camera.getCameraFront();
+        historyCameraUp = camera.getCameraUp();
+        historyYaw = camera.getYaw();
+        historyPitch = camera.getPitch();
+    } else
+    {
+        camera.setCameraPos(historyCameraPos);
+        camera.setCameraFront(historyCameraFront);
+        camera.setCameraUp(historyCameraUp);
+        camera.setYaw(historyYaw);
+        camera.setPitch(historyPitch);
+    }
+}
+
+void CubeWidget::restartScene()
+{
+    scene->reload();
+    scene->setShowPathFlag(false);
+    godModeFlag = false;
+
+    emit setShowPathFlag(false);
+    emit setGodModeFlag(false);
+
+    camera.setCameraPos(QVector3D(scene->getCube()->getFacetSideLength(), 0, -scene->getCube()->getFacetSideLength()));
+    camera.setCameraFront({0.f, 0.f, -1.f});
+    camera.setCameraUp({0.f, 1.f, 0.f});
+    camera.setYaw(- M_PI / 2);
+    camera.setPitch(0.f);
+    historyCameraPos = camera.getCameraPos();
+    historyCameraFront = camera.getCameraFront();
+    historyCameraUp = camera.getCameraUp();
+    historyYaw = camera.getYaw();
+    historyPitch = camera.getPitch();
+}
+
+void CubeWidget::resizeScene(int newSize)
+{
+    scene->init(newSize);
+    restartScene();
+}
+
 void CubeWidget::collisionDetection(int currRow, int currCol)
 {
     auto maze = scene->getData();
@@ -190,6 +262,10 @@ void CubeWidget::timerEvent(QTimerEvent *)
 {
     doMovement();
     update();
+
+    auto secElapsed = static_cast<int>(timeRecord.elapsed() / 1000);
+    emit secsElapsed(secElapsed % 60);
+    emit minsElapsed(secElapsed / 60);
 }
 
 void CubeWidget::keyPressEvent(QKeyEvent *e)
@@ -233,8 +309,12 @@ void CubeWidget::doMovement()
     fractPart = modf(-camera.getCameraPos().z()/scene->getCube()->getFacetSideLength(), &intPart);
     int col = fractPart < 0.5 ? int(intPart) : int(intPart) + 1;
 
-    collisionDetection(row, col);
-    scene->update(row, col);
+    if(!godModeFlag)
+    {
+        camera.setCameraPos(QVector3D{camera.getCameraPos().x(), 0, camera.getCameraPos().z()});
+        collisionDetection(row, col);
+        scene->update(row, col);
+    }
 
 }
 
@@ -254,7 +334,7 @@ void CubeWidget::initializeGL()
     glEnable(GL_CULL_FACE);
     pointLightCube = std::make_shared<Cube>();
     scene = std::make_shared<Scene>();
-    scene->initScene();
+    scene->init();
 
     camera.setZNear(zNear);
     camera.setZFar(zFar);
@@ -270,6 +350,7 @@ void CubeWidget::initializeGL()
     n = 0;
     // Use QBasicTimer because its faster than QTimer
     timer.start(deltaTimeMsec, this);
+    timeRecord.start();
 }
 
 //! [3]
