@@ -1,7 +1,6 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "material.h"
 #include "cube.h"
 #include "rect.h"
 #include "types.h"
@@ -13,27 +12,22 @@
 
 class Scene {
 public:
-    Scene(int numCubes = 1);
+    Scene();
 
     void init(int size = 5, unsigned int seed = 0);
     void reload();
     void drawScene(QOpenGLShaderProgram* shader) const;
+    void update(int row, int col);
 
     std::shared_ptr<Cube> getCube() const;
     Cell getStart() const;
     Cell getFinish() const;
-
-    void setNumCubes(int newNum);
-
-    void update(int row, int col);
+    const std::vector<std::vector<Cell>>& getData() const;
 
     void setShowPathFlag(bool state);
     void setPath(const std::list<Cell>& newPath);
 
-    const std::vector<std::vector<Cell>>& getData() const;
-
 private:
-    int numCubes_;
     std::shared_ptr<Cube> cube_;
     std::shared_ptr<Rect> rect_;
 

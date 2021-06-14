@@ -5,7 +5,7 @@
 #include "maze_generator.h"
 #include "pathfinder.h"
 
-Scene::Scene(int numCubes) : numCubes_(numCubes), cube_(std::make_shared<Cube>()), rect_(std::make_shared<Rect>())
+Scene::Scene() : cube_(std::make_shared<Cube>()), rect_(std::make_shared<Rect>())
 {
     wallTex = Texture::loadTexture(R"(:/textures/brick.jpeg)");
     freeCellTex = Texture::loadTexture(R"(:/textures/ground.jpg)");
@@ -91,12 +91,6 @@ Cell Scene::getStart() const
 Cell Scene::getFinish() const
 {
     return finish;
-}
-
-void Scene::setNumCubes(int newNum)
-{
-    numCubes_ = newNum;
-    init();
 }
 
 void Scene::update(int row, int col)

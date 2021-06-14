@@ -7,11 +7,10 @@
 
 #include <cstddef>
 
-Cube::Cube(float sideLength, int nStrips, std::shared_ptr<Material> material) :
+Cube::Cube(float sideLength, int nStrips) :
     RenderObject(),
     sideLength_(sideLength),
-    nStrips_(nStrips),
-    material_(material)
+    nStrips_(nStrips)
 {
     pMesh_ = MeshFactory::createCubeMesh(sideLength, nStrips);
 }
@@ -30,17 +29,4 @@ float Cube::getFacetSideLength() const
 int Cube::getFacetStripsNum() const
 {
     return nStrips_;
-}
-
-
-std::shared_ptr<Material> Cube::getMaterial() const
-{
-    return material_;
-}
-
-
-
-void Cube::setMaterial(std::shared_ptr<Material> newMaterial)
-{
-    material_ = newMaterial;
 }

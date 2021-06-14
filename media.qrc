@@ -10,4 +10,7 @@
         <file>grass.jpg</file>
         <file>ground.jpg</file>
     </qresource>
+    <qresource prefix="/animation">
+        <file>win.gif</file>
+    </qresource>
 </RCC>

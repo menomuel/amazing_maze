@@ -6,8 +6,6 @@
 #include <QOpenGLBuffer>
 #include <QColor>
 
-#include "material.h"
-
 #include "meshfactory.h"
 #include "renderobject.h"
 

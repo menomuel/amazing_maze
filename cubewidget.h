@@ -7,10 +7,6 @@
 #include "scene.h"
 #include "texture.h"
 
-#include "pointlightsource.h"
-#include "directlightsource.h"
-#include "projectorlightsource.h"
-
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QMatrix4x4>
@@ -21,6 +17,7 @@
 #include <QElapsedTimer>
 #include <QOpenGLShaderProgram>
 #include <QMediaPlayer>
+#include <QMovie>
 
 #include <memory>
 
@@ -54,31 +51,6 @@ protected:
     void initShaders();
 
 public slots:
-
-    void directLightToggle(int);
-    void directLightChangeX(float);
-    void directLightChangeY(float);
-    void directLightChangeZ(float);
-    void directLightIntensityChange(float);
-    void directLightColorChange(QColor);
-
-    void pointLightToggle(int);
-    void pointLightChangeX(float);
-    void pointLightChangeY(float);
-    void pointLightChangeZ(float);
-    void pointLightIntensityChange(float);
-    void pointLightColorChange(QColor);
-
-
-    void projectorLightToggle(int);
-    void projectorLightCutOffChange(float);
-    void projectorLightOuterCutOffChange(float);
-    void projectorLightIntensityChange(float);
-    void projectorLightColorChange(QColor);
-
-    void sceneNumObjChange(int);
-    void sceneMaterialChange(QString);
-
     void showPath(bool);
     void godMode(bool);
     void restartScene();
@@ -90,6 +62,9 @@ signals:
     void setGodModeFlag(bool);
     void secsElapsed(int);
     void minsElapsed(int);
+
+    void setWinMovie(QMovie*);
+    void clearWinMovie();
 
 
 private:
@@ -122,18 +97,14 @@ private:
     bool winFlag = false;
     bool winMusicFlag = false;
 
-    QOpenGLShaderProgram objectShader, lightShader;
+    QOpenGLShaderProgram objectShader;
     std::shared_ptr<Scene> scene;
-    std::shared_ptr<Cube> pointLightCube;
 
     std::shared_ptr<Arrow> arrow;
     std::shared_ptr<QOpenGLTexture> arrowTex;
 
     std::shared_ptr<QMediaPlayer> player;
-
-    DirectLightSource directLight;
-    PointLightSource pointLight;
-    ProjectorLightSource projectorLight;
+    std::shared_ptr<QMovie> movie;
 
     QVector2D mousePressPosition, mouseLastPosition;
     QVector3D rotationAxis;

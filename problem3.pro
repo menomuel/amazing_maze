@@ -13,18 +13,12 @@ SOURCES += \
     arrow.cpp \
     camera.cpp \
     cube.cpp \
-    cubefacet.cpp \
     cubewidget.cpp \
-    directlightsource.cpp \
-    lightsource.cpp \
     main.cpp \
     mainwindow.cpp \
-    material.cpp \
     maze_generator.cpp \
     meshfactory.cpp \
     pathfinder.cpp \
-    pointlightsource.cpp \
-    projectorlightsource.cpp \
     rect.cpp \
     renderobject.cpp \
     scene.cpp \
@@ -34,18 +28,12 @@ HEADERS += \
     arrow.h \
     camera.h \
     cube.h \
-    cubefacet.h \
     cubewidget.h \
-    directlightsource.h \
-    lightsource.h \
     mainwindow.h \
-    material.h \
     maze_generator.h \
     mesh.h \
     meshfactory.h \
     pathfinder.h \
-    pointlightsource.h \
-    projectorlightsource.h \
     rect.h \
     renderobject.h \
     scene.h \
