@@ -1,10 +1,12 @@
 #include "pathfinder.h"
 
+#include <ctime>
 #include <iostream>
 
 std::list<Cell> PathFinder::findPath(const std::vector<std::vector<Cell>>& Maze, int x, int y, int x_to, int y_to)
 {
     auto maze = Maze;
+
     //clear previous maze history
     for (int row = 0; row < static_cast<int>(maze.size()); ++row)
     {
@@ -25,6 +27,9 @@ std::list<Cell> PathFinder::findPath(const std::vector<std::vector<Cell>>& Maze,
         std::cout << "No path between walls\n";
         return path;
     }
+
+    std::mt19937 engine(std::time(nullptr));
+    std::uniform_int_distribution<> distrib(0, std::numeric_limits<unsigned int>::max());
 
     maze[x][y].Visited = true;
     path.push_back(maze[x][y]);
@@ -51,7 +56,7 @@ std::list<Cell> PathFinder::findPath(const std::vector<std::vector<Cell>>& Maze,
             path.pop_back();
         else
         {
-            Cell next = nextStep[rand() % nextStep.size()];
+            Cell next = nextStep[distrib(engine) % nextStep.size()];
             next.Visited = true;
             maze[next.row][next.col].Visited = true;
             path.push_back(next);

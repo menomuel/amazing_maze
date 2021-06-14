@@ -20,6 +20,7 @@
 #include <QTime>
 #include <QElapsedTimer>
 #include <QOpenGLShaderProgram>
+#include <QMediaPlayer>
 
 #include <memory>
 
@@ -118,12 +119,17 @@ private:
     QTime stopwatch;
     QElapsedTimer timeRecord;
 
+    bool winFlag = false;
+    bool winMusicFlag = false;
+
     QOpenGLShaderProgram objectShader, lightShader;
     std::shared_ptr<Scene> scene;
     std::shared_ptr<Cube> pointLightCube;
 
     std::shared_ptr<Arrow> arrow;
     std::shared_ptr<QOpenGLTexture> arrowTex;
+
+    std::shared_ptr<QMediaPlayer> player;
 
     DirectLightSource directLight;
     PointLightSource pointLight;

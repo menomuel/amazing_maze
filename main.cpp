@@ -8,6 +8,16 @@
 #include "cubewidget.h"
 #include "mainwindow.h"
 
+#include <random>
+
+int gen_rand(double min, double max, int seed = 0)
+{
+    std::default_random_engine gen{seed};
+    std::uniform_int_distribution<> dis(min, max);
+    return dis(gen);
+}
+
+
 
 int main(int argc, char *argv[])
 {

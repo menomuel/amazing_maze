@@ -15,7 +15,7 @@ class Scene {
 public:
     Scene(int numCubes = 1);
 
-    void init(int size = 5);
+    void init(int size = 5, unsigned int seed = 0);
     void reload();
     void drawScene(QOpenGLShaderProgram* shader) const;
 

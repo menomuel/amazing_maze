@@ -24,9 +24,11 @@ namespace
         }
 
         //Choose start position
-        srand(seed);
-        int startX = rand() % width;
-        int startY = rand() % height;
+        std::mt19937 engine(seed);
+        std::uniform_int_distribution<> distrib(0, std::max(width, height));
+
+        int startX = distrib(engine) % width;
+        int startY = distrib(engine) % height;
 
         labyrinth[startX][startY].Visited = true;
 
@@ -52,7 +54,7 @@ namespace
             if (!nextStep.empty())
             {
                 //Choose a random direction
-                Cell next = nextStep[rand() % nextStep.size()];
+                Cell next = nextStep[distrib(engine) % nextStep.size()];
 
                 //Open path to the neighbor
                 if (next.row != _cell.row)

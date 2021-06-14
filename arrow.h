@@ -14,7 +14,7 @@
 class Arrow : public RenderObject
 {
 public:
-    Arrow(float width = 1.f, float height = 1.f);
+    Arrow(float width = 0.5f, float height = 0.5f);
     virtual ~Arrow();
 
 protected:

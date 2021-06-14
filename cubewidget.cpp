@@ -172,6 +172,10 @@ void CubeWidget::restartScene()
     scene->reload();
     scene->setShowPathFlag(false);
     godModeFlag = false;
+    winFlag = false;
+    winMusicFlag = false;
+
+    player->stop();
 
     emit setShowPathFlag(false);
     emit setGodModeFlag(false);
@@ -186,11 +190,13 @@ void CubeWidget::restartScene()
     historyCameraUp = camera.getCameraUp();
     historyYaw = camera.getYaw();
     historyPitch = camera.getPitch();
+
+    timeRecord.restart();
 }
 
 void CubeWidget::resizeScene(int newSize)
 {
-    scene->init(newSize);
+    scene->init(newSize, std::time(nullptr));
     restartScene();
 }
 
@@ -253,7 +259,7 @@ void CubeWidget::mouseMoveEvent(QMouseEvent *e)
     if (e->buttons() & Qt::RightButton)
     {
         QVector2D diff = QVector2D(e->pos()) - mouseLastPosition;
-        diff *= 0.001f;
+        diff *= 0.002f;
         camera.rotate(diff.x(), diff.y());
     }
     mouseLastPosition = QVector2D(e->pos());
@@ -264,9 +270,19 @@ void CubeWidget::timerEvent(QTimerEvent *)
     doMovement();
     update();
 
-    auto secElapsed = static_cast<int>(timeRecord.elapsed() / 1000);
-    emit secsElapsed(secElapsed % 60);
-    emit minsElapsed(secElapsed / 60);
+    if(!winFlag)
+    {
+        auto secElapsed = static_cast<int>(timeRecord.elapsed() / 1000);
+        emit secsElapsed(secElapsed % 60);
+        emit minsElapsed(secElapsed / 60);
+    }  else if (!winMusicFlag)
+    {
+        if(player->state() == QMediaPlayer::PlayingState)
+            player->setPosition(0);
+        else if(player->state() == QMediaPlayer::StoppedState)
+            player->play();
+        winMusicFlag = true;
+    }
 }
 
 void CubeWidget::keyPressEvent(QKeyEvent *e)
@@ -315,6 +331,8 @@ void CubeWidget::doMovement()
         camera.setCameraPos(QVector3D{camera.getCameraPos().x(), 0, camera.getCameraPos().z()});
         collisionDetection(row, col);
         scene->update(row, col);
+        if (scene->getFinish().row == row && scene->getFinish().col == col)
+            winFlag = true;
     }
 
 }
@@ -347,6 +365,9 @@ void CubeWidget::initializeGL()
     directLight = DirectLightSource();
     pointLight = PointLightSource();
     projectorLight = ProjectorLightSource(camera.getCameraPos(), camera.getCameraFront());
+
+    player = std::make_shared<QMediaPlayer>();
+    player->setMedia(QUrl("qrc:/sounds/win_theme.mp3"));
 
     glActiveTexture(GL_TEXTURE0);
 
@@ -425,7 +446,11 @@ void CubeWidget::paintGL()
         auto b = QVector3D{historyCameraFront.x(), 0.f, historyCameraFront.z()};
         b.normalize();
 
+        auto dir = QVector3D::crossProduct(a, b);
+
         auto angle = qRadiansToDegrees(qAcos(QVector3D::dotProduct(a, b)));
+        angle = dir.y() < 0 ? angle : -angle;
+
         mat.rotate(-angle, QVector3D{0.f, 1.f, 0.f});
 
         objectShader.setUniformValue(0, mat);

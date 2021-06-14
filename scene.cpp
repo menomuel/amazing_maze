@@ -1,20 +1,22 @@
 #include "scene.h"
 
+#include <QUrl>
+
 #include "maze_generator.h"
 #include "pathfinder.h"
 
 Scene::Scene(int numCubes) : numCubes_(numCubes), cube_(std::make_shared<Cube>()), rect_(std::make_shared<Rect>())
 {
-    wallTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\brick.jpeg)");
-    freeCellTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\ground.jpg)");
-    visitedCellTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\grass.jpg)");
-    pathTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\flowerbeds.jpg)");
-    finishTex = Texture::loadTexture(R"(D:\NSU\6 semester\Graphics\amazing_maze\finish.jpg)");
+    wallTex = Texture::loadTexture(R"(:/textures/brick.jpeg)");
+    freeCellTex = Texture::loadTexture(R"(:/textures/ground.jpg)");
+    visitedCellTex = Texture::loadTexture(R"(:/textures/grass.jpg)");
+    pathTex = Texture::loadTexture(R"(:/textures/flowerbeds.jpg)");
+    finishTex = Texture::loadTexture(R"(:/textures/finish.jpg)");
 }
 
-void Scene::init(int size)
+void Scene::init(int size, unsigned int seed)
 {
-    maze_ = MazeGenerator::generate(size, size);
+    maze_ = MazeGenerator::generate(size, size, seed);
     start = maze_[1][1];
     finish = maze_[static_cast<int>(maze_.size()) - 2][static_cast<int>(maze_[0].size()) - 2];
     path_ = PathFinder::findPath(maze_, start.row, start.col, finish.row, finish.col);

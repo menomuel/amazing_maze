@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/sounds">
+        <file>win_theme.mp3</file>
+    </qresource>
+    <qresource prefix="/textures">
+        <file>arrow.jpg</file>
+        <file>brick.jpeg</file>
+        <file>finish.jpg</file>
+        <file>flowerbeds.jpg</file>
+        <file>grass.jpg</file>
+        <file>ground.jpg</file>
+    </qresource>
+</RCC>
